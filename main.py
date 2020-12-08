@@ -1,6 +1,6 @@
 import os
 import base64
-
+import html
 from flask import Flask, request
 from model import Message 
 
@@ -14,6 +14,7 @@ def home():
         m.save()
 
     body = """
+
 <html>
 <body>
 <h1>Class Message Board</h1>
@@ -25,18 +26,18 @@ def home():
 
 <h2>Wisdom From Your Fellow Classmates</h2>
 """
-    
+    s = html.escape( """& < " ' >""" ) 
     for m in Message.select():
         body += """
 <div class="message">
 {}
 </div>
-""".format(m.content)
+""".format(m.content.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;').replace('"','&quot;'))
 
     return body 
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 6738))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)
 
